@@ -1,14 +1,13 @@
-import express, { Application , Response , Request} from "express"
+import express, { Application , Response , Request, Router} from "express"
+import router from "./routes";
 
 let app : Application = express();
-
-app.get("/api/user/currentuser",(req: Request, res:Response)=>{
-    res.send("hello")
-})
+let port : number = 8000
+app.use("/",router);
 
 
-console.log("111111")
-app.listen(3000, ()=>{
-    console.log("server is running on port 3000 ")
+
+app.listen(port, ()=>{
+    console.log(`server is live on ${port}`)
 })
 
