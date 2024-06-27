@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { body, validationResult } from 'express-validator';
+import { DatabaseConnectionError, RequestValidationError } from "../middlewares/error-handler";
 
 export const signup = [
   body('email')
@@ -11,25 +12,27 @@ export const signup = [
     .withMessage("Password must be at least 6 characters long"),
 
   async (req: Request, res: Response, next: NextFunction) => {
-
     try {
-        
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-          return res.status(400).json({ errors: errors.array() });
-        }
-    
-        const { email, password } = req.body;
-    
-        if (!email || typeof email !== 'string') {
-          return res.status(400).send("Provide a valid email");
-        }
-    
-        
-    
-        res.status(201).send("User created successfully");
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(new RequestValidationError(errors.array()));
+      }
+
+      const { email, password } = req.body;
+
+      if (!email || typeof email !== 'string') {
+        return next(new Error('Provide a valid email'));
+      }
+
+      
+      console.log(`Creating user with email: ${email} and password: ${password}`);
+
+      res.status(201).send("User created successfully");
+
+          return next(new DatabaseConnectionError());
+
     } catch (error) {
-     next(error)   
-    }
+      next(error);
+       }
   }
 ];
