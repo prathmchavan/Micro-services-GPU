@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { body, validationResult } from 'express-validator';
-import { DatabaseConnectionError, RequestValidationError } from "../middlewares/error-handler";
+import {  BadRequestError, RequestValidationError } from "../middlewares/error-handler";
+import { User } from "../models/User";
+import { hashPassword } from "../services/passwordSrv";
+
+
 
 export const signup = [
   body('email')
@@ -18,18 +22,21 @@ export const signup = [
         return next(new RequestValidationError(errors.array()));
       }
 
-      const { email, password } = req.body;
+      const {email , password } = req.body
 
-      if (!email || typeof email !== 'string') {
-        return next(new Error('Provide a valid email'));
+      const existingUser = await User.findOne({email});
+
+      const hashedpass = await hashPassword(password);
+
+      if(existingUser){
+        return next( new BadRequestError("Email already exist"))
       }
 
-      
-      console.log(`Creating user with email: ${email} and password: ${password}`);
+      const user = new User ({email,  password : hashedpass});
 
-      res.status(201).send("User created successfully");
+      await user.save();
 
-          return next(new DatabaseConnectionError());
+      res.status(200).send(user)
 
     } catch (error) {
       next(error);
