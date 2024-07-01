@@ -8,106 +8,76 @@ import { CurrentUserMid } from "../middlewares/current-user";
 
 
 
-export const signup = [
-  body('email')
-    .isEmail()
-    .withMessage("Enter a valid email"),
 
-  body('password')
-    .trim()
-    .isLength({ min: 6 })
-    .withMessage("Password must be at least 6 characters long"),
+export const signup = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email, password } = req.body;
 
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-    
+    const existingUser = await User.findOne({ email });
 
-      const {email , password } = req.body
+    if (existingUser) {
+      return next(new BadRequestError("Email already exists"));
+    }
 
-      const existingUser = await User.findOne({email});
+    const hashedPass = await hashPassword(password);
+    const user = new User({ email, password: hashedPass });
 
-      const hashedpass = await hashPassword(password);
+    await user.save();
 
-      if(existingUser){
-        return next( new BadRequestError("Email already exist"))
-      }
+    // Generate JWT
+    const userJwt = jwt.sign({
+      id: user.id,
+      email: user.email
+    }, process.env.JWT_KEY!);
 
-      const user = new User ({email,  password : hashedpass});
+    req.session = {
+      jwt: userJwt
+    };
 
-      await user.save();
-
-      //generate jwt
-
-        const userjwt = jwt.sign({
-          id:user.id,
-          email: user.email 
-        }, process.env.jwt!)
-
-        req.session={
-          jwt: userjwt
-        }
-      //store it on session object
-
-
-      res.status(201).send(user)
-
-    } catch (error) {
-      next(error);
-       }  
+    // Store it on session object
+    res.status(201).send(user);
+  } catch (error) {
+    next(error);
   }
-];
+};
 
 
+export const signin = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email, password } = req.body;
 
-export const signin = [
-  body('email')
-    .isEmail()
-    .withMessage("Enter a valid email"),
+    const existingUser = await User.findOne({ email });
 
-  body('password')
-    .trim()
-    .isLength({ min: 6 })
-    .withMessage("Password must be at least 6 characters long"),
+    if (!existingUser) {
+      return next(new BadRequestError("Invalid credentials"));
+    }
 
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-    
+    const isMatch = await comparePasswords(password, existingUser.password);
 
-      const {email , password } = req.body
+    if (!isMatch) {
+      return res.status(400).send({ error: "Invalid credentials" });
+    }
 
-      const existingUser = await User.findOne({email});
+    // Generate JWT
+    const userJwt = jwt.sign(
+      {
+        id: existingUser.id,
+        email: existingUser.email,
+      },
+      process.env.JWT_KEY!
+    );
 
-      if(!existingUser){
-        return next( new BadRequestError("Invalid credential "))
-      }
+    req.session = {
+      jwt: userJwt,
+    };
 
-      const isMatch = await existingUser.comparePassword(password);
-
-      if (!isMatch) {
-        return res.status(400).send({ error: "Wrong Password" });
-      }
-      
-
-       //generate jwt
-
-       const userjwt = jwt.sign({
-        id:existingUser.id,
-        email: existingUser.email 
-      }, process.env.jwt!)
-
-      req.session={
-        jwt: userjwt
-      }
-    //store it on session object
-
-
-    res.status(200).send(existingUser)
-
-    } catch (error) {
-      next(error);
-       }  
+    // Store it on session object
+    res.status(200).send(existingUser);
+  } catch (error) {
+    next(error);
   }
-];
+};
+
 
 
 export const currentUser = (req: Request , res:Response , next: NextFunction) =>{
