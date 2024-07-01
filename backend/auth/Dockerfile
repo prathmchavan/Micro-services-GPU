@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies including devDependencies
-RUN npm install
+RUN npm install --only=prod
 
 # # Install TypeScript globally
 RUN npm install -g typescript

@@ -18,7 +18,7 @@ dotenv.config();
 
         
         console.log("error connecting db")
-        throw new Error
+        // throw new Error
     }
 }
 
