@@ -9,13 +9,9 @@ export const errorHandler = (err: Error, req: Request, res: Response, next: Next
     console.log("something went wrong ", err);
 
     if(err instanceof CustomError) {
-
       
         return res.status(err.statusCode).send({errors: err.serializeErrors()}); 
     }
-
-
-
 
     res.status(400).send({ message: err.message });
 }
@@ -82,5 +78,19 @@ export class BadRequestError extends CustomError{
 
 
 
+
+export class NotAuthorizedError  extends CustomError{
+    statusCode: number = 401;
+
+    constructor()
+    {
+        super('not authorized');
+        Object.setPrototypeOf(this , NotAuthorizedError.prototype)
+    }
+    serializeErrors() {
+        
+        return [{message:'not authorized'}];
+    }
+}
 
 
