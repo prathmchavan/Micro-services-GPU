@@ -3,6 +3,7 @@ import { body, validationResult } from 'express-validator';
 import {  BadRequestError, RequestValidationError } from "../middlewares/error-handler";
 import { User } from "../models/User";
 import { hashPassword } from "../services/passwordSrv";
+import jwt from "jsonwebtoken"
 
 
 
@@ -10,6 +11,7 @@ export const signup = [
   body('email')
     .isEmail()
     .withMessage("Enter a valid email"),
+
   body('password')
     .trim()
     .isLength({ min: 6 })
@@ -18,6 +20,7 @@ export const signup = [
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const errors = validationResult(req);
+      
       if (!errors.isEmpty()) {
         return next(new RequestValidationError(errors.array()));
       }
@@ -36,10 +39,23 @@ export const signup = [
 
       await user.save();
 
+      //generate jwt
+
+        const userjwt = jwt.sign({
+          id:user.id,
+          email: user.email 
+        }, process.env.jwt!)
+
+        req.session={
+          jwt: userjwt
+        }
+      //store it on session object
+
+
       res.status(200).send(user)
 
     } catch (error) {
       next(error);
-       }
+       }  
   }
 ];

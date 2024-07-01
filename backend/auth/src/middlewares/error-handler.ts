@@ -21,22 +21,26 @@ export const errorHandler = (err: Error, req: Request, res: Response, next: Next
 }
 
 
-
 export class RequestValidationError extends CustomError {
-
-    statusCode  = 400;
-
+    statusCode = 400;
+  
     constructor(public errors: ValidationError[]) {
-        super("request error");
-        Object.setPrototypeOf(this, RequestValidationError.prototype);
+      super('Invalid request parameters');
+  
+      // Only because we are extending a built-in class
+      Object.setPrototypeOf(this, RequestValidationError.prototype);
     }
-    serializeErrors()
-    {
-        return this.errors.map(error=>{
-            return{ message: error.msg , field : error.type}
-        })
+    
+  
+    serializeErrors() {
+      return this.errors.map((error) => {
+     
+        return { message: error.msg, path: error.type  };
+      });
     }
-}
+  }
+
+
 
 export class DatabaseConnectionError extends CustomError {
     statusCode = 500;
