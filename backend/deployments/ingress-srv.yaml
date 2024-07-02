@@ -9,10 +9,17 @@ spec:
   - host: pc.dev
     http:
       paths:
-      - path: /
+      - path: /auth
         pathType: Prefix
         backend:
           service:
             name: auth-service
             port:
               number: 3000
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: client-srv
+            port:
+              number: 3000 

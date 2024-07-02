@@ -10,10 +10,18 @@ build:
             dest: .
       docker:
         dockerfile: Dockerfile
+    - image: systempc23/client
+      context: client
+      sync:
+        manual:
+          - src: src/**/*.ts
+            dest: .
+      docker:
+        dockerfile: Dockerfile
   local:
     push: false
 manifests:
   rawYaml:
-    - ./auth/deployments/*
+    - ./deployments/*
 deploy:
   kubectl: {}
