@@ -21,7 +21,7 @@ app.use(cookieSession({
 }));
 
 // Routes
-app.use("/", router);
+app.use("/auth", router);
 
 // Error handler middleware
 app.use(errorHandler);
