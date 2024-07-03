@@ -1,18 +1,6 @@
-console.log("hello")
+export * from './errors/customError';
 
-
-let a : number = 10
-
-
-interface Color{
-
-    red: number;
-
-}
-
-const color : Color={
-
-    red: 10
-}
-
-export default color
+export * from './middlewares/current-user';
+export * from './middlewares/error-handler';
+export * from './middlewares/require-auth';
+export * from './middlewares/validate-request';
