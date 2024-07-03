@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { body,  } from 'express-validator';
-import {  BadRequestError } from "../middlewares/error-handler";
+import {  BadRequestError } from "@microproj/proj";
 import { User } from "../models/User";
 import { comparePasswords, hashPassword } from "../services/passwordSrv";
 import jwt from "jsonwebtoken"
-import { CurrentUserMid } from "../middlewares/current-user";
+import { CurrentUserMid } from "@microproj/proj";
 
 
 

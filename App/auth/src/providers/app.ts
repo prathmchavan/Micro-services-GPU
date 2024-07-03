@@ -3,7 +3,8 @@ import cookieSession from "cookie-session";
 import dotenv from "dotenv"
 import connectDb from "../db";
 import router from "../routes";
-import { errorHandler } from "../middlewares/error-handler";
+import { errorHandler } from "@microproj/proj";
+
 
 const app: Application = express();
 

@@ -1,9 +1,8 @@
 import { Router } from 'express';
 import { currentUser, signin, signout, signup } from '../controllers/user';
-import { validationRequest } from '../middlewares/validate-request';
-import { CurrentUserMid } from '../middlewares/current-user';
-import { requireAuth } from '../middlewares/require-auth';
 import { body } from 'express-validator';
+import { CurrentUserMid, requireAuth, validationRequest } from '@microproj/proj';
+
 
 const router = Router();
 
