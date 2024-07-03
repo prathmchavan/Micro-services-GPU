@@ -30,7 +30,6 @@ export const CurrentUserMid = ( req: Request , res: Response , next : NextFuncti
     } catch (error) {
         next();
     }
-    next();
 
 }
 

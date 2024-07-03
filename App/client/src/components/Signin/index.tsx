@@ -1,6 +1,10 @@
 "use client"
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { Container, Box, TextField, Button, Typography, Grid, Link } from '@mui/material';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import Swal from 'sweetalert2';
+
 
 interface FormValues {
   email: string;
@@ -8,6 +12,7 @@ interface FormValues {
 }
 
 const SignInForm: React.FC = () => {
+  const router = useRouter();
   const [formValues, setFormValues] = useState<FormValues>({
     email: '',
     password: ''
@@ -21,10 +26,41 @@ const SignInForm: React.FC = () => {
     });
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Handle form submission logic here
-    console.log('Form submitted', formValues);
+    console.log('Form submitted', formValues.email, formValues.password);
+    const email = formValues.email;
+    const password = formValues.password
+    try {
+
+        const res = await axios.post('/auth/user/signin', {
+            email, password
+        })
+        
+        router.push('/')
+    } catch (error: any) {
+
+        console.log(error)
+        if (error.response && error.response.data && error.response.data.errors && error.response.data.errors.length > 0) {
+            const errorMessages = error.response.data.errors.map((error: any) => error.message);
+            const errorMessage = errorMessages.join('\n'); // Concatenate messages with newline
+
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: errorMessage,
+            });
+        } else {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Something went wrong. Please try again later.",
+            });
+        }
+        
+
+    }
   };
 
   return (

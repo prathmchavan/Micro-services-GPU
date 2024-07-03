@@ -1,10 +1,9 @@
-// pages/index.tsx
 import React from 'react';
 import { Container, Typography, Box, Button } from '@mui/material';
-import Link from 'next/link';
 
 
 const Home: React.FC = () => {
+
   return (
     <Box>
       

@@ -28,7 +28,7 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
     const userJwt = jwt.sign({
       id: user.id,
       email: user.email
-    }, process.env.JWT_KEY!);
+    }, process.env.jwt!);
 
     req.session = {
       jwt: userJwt
@@ -72,7 +72,7 @@ export const signin = async (req: Request, res: Response, next: NextFunction) =>
     };
 
     // Store it on session object
-    res.status(200).send(existingUser);
+    res.status(200).json({ user: existingUser, token: userJwt });
   } catch (error) {
     next(error);
   }

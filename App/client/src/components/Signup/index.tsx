@@ -8,17 +8,23 @@ import {
     Button,
     Typography,
     Grid,
-    Link
+    Link,
+    useRadioGroup
 } from '@mui/material';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
+
 
 interface FormValues {
-    
+
     email: string;
     password: string;
 }
 
 const SignupForm: React.FC = () => {
+
+    const router = useRouter();
+
     const [formValues, setFormValues] = useState<FormValues>({
         email: '',
         password: '',
@@ -35,23 +41,37 @@ const SignupForm: React.FC = () => {
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         // Handle form submission logic here
-        console.log('Form submitted', formValues.email , formValues.password);
+        console.log('Form submitted', formValues.email, formValues.password);
+        const email = formValues.email;
+        const password = formValues.password
         try {
-            
-            const res = await axios.post('/auth/user/signup',{
-                formValues
+
+            const res = await axios.post('/auth/user/signup', {
+                email, password
             })
-            console.log(res.data)
-        } catch (error:any) {
+            console.log(res)
+            // router.push('/')
+        } catch (error: any) {
 
-            console.log(error.res.data.errors)
+            console.log(error)
+            if (error.response && error.response.data && error.response.data.errors && error.response.data.errors.length > 0) {
+                const errorMessages = error.response.data.errors.map((error: any) => error.message);
+                const errorMessage = errorMessages.join('\n'); // Concatenate messages with newline
+    
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: errorMessage,
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Something went wrong. Please try again later.",
+                });
+            }
+            
 
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text:"w8" ,
-                footer: '<a href="#">Why do I have this issue?</a>'
-              });
         }
     };
 
@@ -65,7 +85,7 @@ const SignupForm: React.FC = () => {
                 <Typography variant="h4" component="h1" gutterBottom>
                     Sign Up
                 </Typography>
-              
+
                 <TextField
                     label="Email"
                     name="email"
@@ -86,7 +106,7 @@ const SignupForm: React.FC = () => {
                     onChange={handleInputChange}
                     required
                 />
-               
+
                 <Button
                     type="submit"
                     fullWidth
@@ -109,3 +129,4 @@ const SignupForm: React.FC = () => {
 };
 
 export default SignupForm;
+
