@@ -9,11 +9,18 @@ spec:
   - host: pc.dev
     http:
       paths:
-      - path: /auth
+      - path: /auth/
         pathType: Prefix
         backend:
           service:
             name: auth-service
+            port:
+              number: 3000
+      - path: /tktapi/
+        pathType: Prefix
+        backend:
+          service:
+            name: tickets-srv
             port:
               number: 3000
       - path: /

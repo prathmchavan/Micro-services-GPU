@@ -4,5 +4,5 @@ const port: number = 8000;
 
 // Start server
 app.listen(port, () => {
-    console.log(`Server is live on port ${port}`);
+    console.log(`Auth Server is live on port ${port}`);
 });

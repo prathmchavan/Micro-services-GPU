@@ -10,8 +10,12 @@ dotenv.config();
         {
             throw new Error("jwt key must be defined");
         }
-
-        await mongoose.connect('mongodb://auth-mongo-srv:27017/auth');
+        if(!process.env.URI)
+            {
+                throw new Error("jwt key must be defined");
+            }
+    
+        await mongoose.connect(process.env.URI);
         console.log("auth service datbase is connected ")
 
     } catch (error) {
